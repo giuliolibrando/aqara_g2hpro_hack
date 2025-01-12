@@ -31,3 +31,49 @@ ulimit: invalid option -- q
 1 ulimit=256
 / #
 ```
+Now, let's enable rtsp on boot.
+Edit post_init.sh
+```
+vi /data/scripts/post_init.sh
+```
+
+From this:
+```
+#!/bin/sh
+
+fw_manager.sh -r
+passwd -d $USER
+fw_manager.sh -t -k
+```
+
+to this:
+
+```
+#!/bin/sh
+
+fw_manager.sh -r
+passwd -d $USER
+fw_manager.sh -t -k
+
+pkill rtsp
+rtsp &
+```
+
+Exit from Vi and save with "esc" and then  ":wq!"
+
+Reboot the camera with:
+```
+reboot
+```
+
+Login into telnet again and check if rtsp is running with
+```
+agetprop sys.camera_rtsp_url
+```
+I should return something like this:
+```
+/ # agetprop sys.camera_rtsp_url
+
+{"360p":"rtsp:\/\/192.168.1.16:8554\/360p","720p":"rtsp:\/\/192.168.1.16:8554\/720p","1080p":"rtsp:\/\/192.168.1.16:8554\/1080p"}
+```
+ex. Use "rtsp://192.168.1.16:8554/720p" inside Frigate if you want the 720p rtsp stream
